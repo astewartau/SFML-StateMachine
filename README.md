@@ -18,18 +18,18 @@ An initial state called ```DemoState.hpp``` has been provided to demonstrate the
 class DemoState : public State {
 private:
 	void InitState() {
-    // State initialisation
+		// State initialisation
 		_rectangle.setSize(sf::Vector2f(200, 150));
 		_rectangle.setFillColor(sf::Color::Red);
 		_rectangle.setPosition(20, 20);
 	}
 
 	void Update(int deltaTime) {
-    // State logic
+		// State logic
 	}
 
 	void Draw() {
-    // Draw calls
+		// Draw calls
 		_window->draw(_rectangle);
 	}
 
