@@ -3,14 +3,14 @@
 
 # Installation
 You can set up SFML-StateMachine by adding the StateMachine folder or the files therein to your project. This includes:
-- ```State.cpp```
-- ```State.hpp```
-- ```StateMachine.cpp```
-- ```StateMachine.hpp```
+- [State.hpp](StateMachine/State.hpp)
+- [State.cpp](StateMachine/State.cpp)
+- [StateMachine.hpp](StateMachine/StateMachine.hpp)
+- [StateMachine.cpp](StateMachine/StateMachine.cpp)
 
 # Usage
 ## Writing custom states
-An initial state called ```DemoState.hpp``` has been provided to demonstrate the basic usage. Custom states are built by extending the virtual class State, making sure to override the virtual methods ```InitState()```, ```Update(int deltaTime)``` and ```Draw()```. The DemoState is also provided below:
+An initial state [DemoState.hpp](DemoState.hpp) is included to demonstrate the basic usage. Custom states are built by extending the virtual class ```State```, ensuring to override the virtual methods ```InitState()```, ```Update(int deltaTime)``` and ```Draw()```. The DemoState is also included below:
 ```cpp
 #pragma once
 #include "State.hpp"
@@ -38,7 +38,7 @@ private:
 ```
 
 ## Running states using the StateMachine
-The DemoState above has been used in an example application in ```main.cpp```, additionally provided below:
+The DemoState above has been used in an example application in [main.cpp](StateMachine/main.cpp), additionally provided below:
 
 ```cpp
 #include "StateMachine/StateMachine.hpp"
@@ -59,8 +59,11 @@ To run a StateMachine, a StateMachine object must be created, and an initial sta
 
 # Documentation
 For detailed documentation, please see the comments within the two header files:
-- ```StateMachine.hpp```
-- ```State.hpp```
+- [StateMachine.hpp](StateMachine/StateMachine.hpp)
+- [State.hpp](StateMachine/State.hpp)
+
+# Development
+For current development status, please see the [issues page](https://github.com/astewartau/SFML-StateMachine/issues).
 
 # Contributions
-This is one of my first open-source projects. As I am relatively new to C++, feedback, advice and contributions are greatly appreciated! For those of you who are new to SFML or managing states, I hope my solution proves useful or insightful!
+Contributions are welcome! Feel free to address issues, or add issues you have identified to the [issues page](https://github.com/astewartau/SFML-StateMachine/issues). Comments, feedback and advice are greatly appreciated.
