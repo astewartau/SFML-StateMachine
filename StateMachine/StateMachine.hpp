@@ -1,53 +1,73 @@
 #pragma once
+#include <queue>
 #include "State.hpp"
 
-// Forward declaration
-class State;
+namespace sm {
+	// Forward declarations
+	class State;
+	enum Status;
 
-///<summary>Represents a StateMachine which manages and executes game states</summary>
-class StateMachine {
-public:
-	///<summary>Constructs a new StateMachine</summary>
-	StateMachine();
+	///<summary>Represents a StateMachine which manages and executes game states</summary>
+	class StateMachine {
+	public:
+		///<summary>Constructs a new StateMachine</summary>
+		StateMachine(sf::RenderWindow* window);
 
-	///<summary>Constructs a new StateMachine with an initial state</summary>
-	///<param name="initialState">The StateMachine's initial state</param>
-	StateMachine(State* initialState);
+		///<summary>Constructs a new StateMachine with the given initial state</summary>
+		///<param name="initialState">The initial state for the StateMachine</param>
+		StateMachine(sf::RenderWindow* window, State* initialState);
 
-	///<summary>Sets the StateMachine's current state to the given state. If another state
-	///is active, it will be deleted and replaced with the new state.</summary>
-	///<param name="newState">The new state</param>
-	void SetState(State* newState);
+		///<summary>Executes the StateMachine. The result is a newly constructed frame 
+		///rendered to the SFML window based on input processing and state logic.</summary>
+		void Execute();
 
-	///<summary>Creates a new SFML window and runs the StateMachine.
-	///Execution repeats until the current state is empty (usually user exit).</summary>
-	void Run();
+		///<summary>Adds the given state to the state machine for processing on execution</summary>
+		///<param name="state">The state to add to the state machine</param>
+		void AddState(State* state);
 
-	///<summary>Gets the SFML window associated with the StateMachine</summary>
-	///<returns>A pointer to the SFML Window</returns>
-	sf::RenderWindow* GetWindow();
+		///<summary>Sets the given state to the given status at the end of the next 
+		///execution cycle.</summary>
+		///<param name="state">A pointer to the state to set the status of</param>
+		///<param name="status">The new status of the state</param>
+		void QueueStateChange(State* state, Status status);
 
-private:
-	// Constants
-	const int WINDOW_WIDTH = 800;
-	const int WINDOW_HEIGHT = 600;
-	const char* WINDOW_TITLE = "State machine";
+		///<summary>Gets the SFML window associated with the StateMachine</summary>
+		///<returns>A pointer to the SFML Window</returns>
+		sf::RenderWindow* GetWindow();
 
-	///<summary>Code to run before the game loop executes</summary>
-	void PreLoop();
+		///<summary>Returns true if the user has quit</summary>
+		///</returns>True if the the user has quit</returns>
+		bool UserQuit();
 
-	///<summary>Code to run after the game loop executes</summary>
-	void PostLoop();
+		///<summary>Destructor - handles deletion of all states</summary>
+		~StateMachine();
+	private:
 
-	///<summary>Handle any input received since the last execution</summary>
-	void ProcessInput();
+		///<summary>Handle any input received since the last execution</summary>
+		void ProcessInput();
 
-	///<summary>Points to the current state</summary>
-	State* _currentState;
+		///<summary>Updates active states according to state logic</summary>
+		void UpdateStates();
 
-	///<summary>An SFML clock that provides the deltaTime between executions</summary>
-	sf::Clock _clock;
+		///<summary>Updates active and paused states</summary>
+		void DrawStates();
 
-	///<summary>The SFML RenderWindow associated with the StateMachine</summary>
-	sf::RenderWindow _window;
-};
+		///<summary>Processes queued actions within the action queue</summary>
+		void ProcessActions();
+
+		///<summary>A vector of states and their associated status</summary>
+		std::vector<State*> _states;
+
+		///<summary>A queue of actions to occur at the end of an execution</summary>
+		std::queue<std::pair<State*, Status>> _actionQueue;
+
+		///<summary>An SFML clock that provides the deltaTime between executions</summary>
+		sf::Clock _clock;
+
+		///<summary>Points to the SFML RenderWindow associated with the StateMachine</summary>
+		sf::RenderWindow* _window;
+
+		///<summary>True if the user has quit</summary>
+		bool _userQuit;
+	};
+}

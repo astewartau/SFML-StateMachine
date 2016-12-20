@@ -1,54 +1,104 @@
 #include "StateMachine.hpp"
 
-StateMachine::StateMachine() {}
+namespace sm {
+	StateMachine::StateMachine(sf::RenderWindow* window) : 
+		_window(window),
+		_userQuit(false) {}
 
-StateMachine::StateMachine(State* initialState) {
-	SetState(initialState);
-}
-
-void StateMachine::SetState(State * newState) {
-	if (_currentState != nullptr) {
-		delete _currentState;
+	StateMachine::StateMachine(sf::RenderWindow * window, State * initialState) :
+		_window(window),
+		_userQuit(false) {
+		AddState(initialState);
 	}
 
-	_currentState = newState;
-	_currentState->Init(this);
-}
-
-void StateMachine::Run() {
-	// Create SFML window
-	_window.create(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), WINDOW_TITLE);
-	_clock.restart();
-
-	// Game loop - continues as long as there is a valid state
-	while (_currentState != nullptr) {
-		PreLoop();
+	void StateMachine::Execute() {
 		ProcessInput();
-		_currentState = _currentState->Execute(_clock.restart().asMilliseconds());
-		PostLoop();
+		UpdateStates();
+		DrawStates();
+		ProcessActions();
 	}
 
-	// Close the SFML window once the state is cleared
-	_window.close();
-}
+	void StateMachine::AddState(State* state) {
+		_states.push_back(state);
+	}
 
-void StateMachine::PreLoop() {}
+	void StateMachine::QueueStateChange(State* state, Status status) {
+		_actionQueue.push(std::make_pair(state, status));
+	}
 
-void StateMachine::ProcessInput() {
-	sf::Event event;
-	while (_window.pollEvent(event)) {
-		switch (event.type) {
-		case sf::Event::Closed:
-			_currentState = nullptr;
-			break;
+	sf::RenderWindow* StateMachine::GetWindow() {
+		return _window;
+	}
+
+	bool StateMachine::UserQuit() {
+		return _userQuit;
+	}
+
+	StateMachine::~StateMachine() {
+		for (auto it = _states.begin(); it != _states.end(); ++it) {
+			delete *it;
+		}
+		_states.clear();
+	}
+
+	void StateMachine::ProcessInput() {
+		sf::Event event;
+		while (_window->pollEvent(event)) {
+			switch (event.type) {
+			case sf::Event::Closed:
+				_userQuit = true;
+				break;
+			}
 		}
 	}
-}
 
-void StateMachine::PostLoop() {
-	//sf::sleep(sf::milliseconds(5));
-}
+	void StateMachine::UpdateStates() {
+		for (State* state : _states) {
+			switch (state->GetStatus()) {
+			case Status::ACTIVATED:
+				state->Update(_clock.restart());
+				break;
+			case Status::PAUSED:
+				break;
+			case Status::DEACTIVATED:
+				break;
+			}
+		}
+	}
 
-sf::RenderWindow* StateMachine::GetWindow() {
-	return &_window;
+	void StateMachine::DrawStates() {
+		_window->clear();
+		for (State* state : _states) {
+			switch (state->GetStatus()) {
+			case Status::ACTIVATED:
+				state->Draw(_window);
+				break;
+			case Status::PAUSED:
+				state->Draw(_window);
+				break;
+			case Status::DEACTIVATED:
+				break;
+			}
+		}
+		_window->display();
+	}
+
+	void StateMachine::ProcessActions() {
+		while (!_actionQueue.empty()) {
+			// Get the next action
+			std::pair<State*, Status> action = _actionQueue.front();
+			_actionQueue.pop();
+
+			// Check whether the state associated with the action is stored
+			auto it = std::find(_states.begin(), _states.end(), action.first);
+
+			// If the state is not stored, store it
+			// otherwise, update the status of the state
+			if (it == _states.end()) {
+				AddState(*it);
+			} else {
+				(*it)->SetStatus(action.second);
+			}
+		}
+	}
 }
