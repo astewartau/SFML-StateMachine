@@ -15,7 +15,7 @@ namespace sm {
 		ProcessInput();
 		UpdateStates();
 		DrawStates();
-		ProcessActions();
+		ProcessStateChanges();
 	}
 
 	void StateMachine::AddState(State* state) {
@@ -83,7 +83,7 @@ namespace sm {
 		_window->display();
 	}
 
-	void StateMachine::ProcessActions() {
+	void StateMachine::ProcessStateChanges() {
 		while (!_actionQueue.empty()) {
 			// Get the next action
 			std::pair<State*, Status> action = _actionQueue.front();

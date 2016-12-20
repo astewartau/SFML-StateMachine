@@ -52,8 +52,8 @@ namespace sm {
 		///<summary>Updates active and paused states</summary>
 		void DrawStates();
 
-		///<summary>Processes queued actions within the action queue</summary>
-		void ProcessActions();
+		///<summary>Processes queued state changes from the action queue</summary>
+		void ProcessStateChanges();
 
 		///<summary>A vector of states and their associated status</summary>
 		std::vector<State*> _states;
