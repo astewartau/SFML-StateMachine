@@ -1,11 +1,11 @@
 #include "StateMachine.hpp"
 
 namespace sm {
-	StateMachine::StateMachine(sf::RenderWindow* window) : 
+	StateMachine::StateMachine(std::shared_ptr<sf::RenderWindow> window) :
 		_window(window),
 		_userQuit(false) {}
 
-	StateMachine::StateMachine(sf::RenderWindow * window, State * initialState) :
+	StateMachine::StateMachine(std::shared_ptr<sf::RenderWindow> window, std::shared_ptr<State> initialState) :
 		_window(window),
 		_userQuit(false) {
 		AddState(initialState);
@@ -18,27 +18,20 @@ namespace sm {
 		ProcessStateChanges();
 	}
 
-	void StateMachine::AddState(State* state) {
+	void StateMachine::AddState(std::shared_ptr<State> state) {
 		_states.push_back(state);
 	}
 
-	void StateMachine::QueueStateChange(State* state, Status status) {
+	void StateMachine::QueueStateChange(std::shared_ptr<State> state, Status status) {
 		_actionQueue.push(std::make_pair(state, status));
 	}
 
-	sf::RenderWindow* StateMachine::GetWindow() {
+	std::shared_ptr<sf::RenderWindow> StateMachine::GetWindow() {
 		return _window;
 	}
 
 	bool StateMachine::UserQuit() {
 		return _userQuit;
-	}
-
-	StateMachine::~StateMachine() {
-		for (auto it = _states.begin(); it != _states.end(); ++it) {
-			delete *it;
-		}
-		_states.clear();
 	}
 
 	void StateMachine::ProcessInput() {
@@ -53,7 +46,7 @@ namespace sm {
 	}
 
 	void StateMachine::UpdateStates() {
-		for (State* state : _states) {
+		for (std::shared_ptr<State> state : _states) {
 			switch (state->GetStatus()) {
 			case Status::ACTIVATED:
 				state->Update(_clock.restart());
@@ -68,13 +61,13 @@ namespace sm {
 
 	void StateMachine::DrawStates() {
 		_window->clear();
-		for (State* state : _states) {
+		for (std::shared_ptr<State> state : _states) {
 			switch (state->GetStatus()) {
 			case Status::ACTIVATED:
-				state->Draw(_window);
+				state->Draw(_window.get());
 				break;
 			case Status::PAUSED:
-				state->Draw(_window);
+				state->Draw(_window.get());
 				break;
 			case Status::DEACTIVATED:
 				break;
@@ -86,7 +79,7 @@ namespace sm {
 	void StateMachine::ProcessStateChanges() {
 		while (!_actionQueue.empty()) {
 			// Get the next action
-			std::pair<State*, Status> action = _actionQueue.front();
+			std::pair<std::shared_ptr<State>, Status> action = _actionQueue.front();
 			_actionQueue.pop();
 
 			// Check whether the state associated with the action is stored

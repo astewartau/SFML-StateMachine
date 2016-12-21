@@ -11,13 +11,11 @@ Install SFML-StateMachine by adding the StateMachine folder or the files therein
 This project requires SFML. SFML version 2.4.1 has been tested, but this project should work with any 2.x version.
 
 # Usage
-[Demo.cpp](Demo.cpp) demonstrates the basic usage. Build custom states by extending the virtual class ```State```, ensuring to implement a constructor, and override the virtual methods ```State.Update(int deltaTime)``` and ```State.Draw()``` with state-specific logic and draw calls respectively.
 
-States can be added to the StateMachine via ```StateMachine.AddState(State* state)```. Alternatively, an initial state can be set using the overloaded StateMachine constructor ```StateMachine(sf::RenderWindow* window, State* initialState)```.
 
 To run the state machine, use ```StateMachine.Execute()```. This will perform one 'execution' of the StateMachine. This may cause State changes and draw calls to be made. The result is a new frame output to the SFML window.
 
-States can be *active*, *paused* or *inactive*. To set a state's status, use ```State.QueueStateChange(State* state, Status status)```.
+States can be *active*, *paused* or *inactive*. To set a state's status, use ```State.QueueStateChange(std::shared_ptr<State> state, Status status)```.
 
 ## Demo file
 ```cpp
@@ -36,8 +34,8 @@ public:
 private:
 	void Update(sf::Time deltaTime) {
 		// The rectangle moves with time
-		_rectangle.move(0.2 * deltaTime.asMilliseconds(),
-			0.2 * deltaTime.asMilliseconds());
+		_rectangle.move(0.2f * deltaTime.asMilliseconds(),
+			0.2f * deltaTime.asMilliseconds());
 
 		// Pause the state when the rectangle nears the bottom
 		// of the screen
@@ -54,25 +52,23 @@ private:
 };
 
 int main() {
-	sf::RenderWindow window;
-	window.create(sf::VideoMode(640, 480), "Window");
+	std::shared_ptr<sf::RenderWindow> window = std::make_shared<sf::RenderWindow>();
+	window->create(sf::VideoMode(640, 480), "Window");
 
-	sm::StateMachine* stateMachine = new sm::StateMachine(&window);
-	stateMachine->AddState(new DemoState());
+	sm::StateMachine stateMachine(window);
+	stateMachine.AddState(std::make_shared<DemoState>());
 
-	while (!stateMachine->UserQuit()) {
-		stateMachine->Execute();
+	while (!stateMachine.UserQuit()) {
+		stateMachine.Execute();
 		sf::sleep(sf::milliseconds(5));
 	}
 
-	delete stateMachine;
-	window.close();
+	window->close();
 
 	printf("Press ENTER to exit");
 	std::getchar();
 	return 0;
 }
-
 ```
 
 # Documentation

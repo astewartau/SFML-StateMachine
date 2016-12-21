@@ -34,7 +34,7 @@ namespace sm {
 
 	protected:
 		///<summary>Points to the state to be executed next</summary>
-		State* _nextState;
+		std::shared_ptr<State> _nextState;
 
 		///<summary>The current status of the state</summary>
 		Status _status;
