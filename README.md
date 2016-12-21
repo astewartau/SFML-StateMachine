@@ -11,7 +11,9 @@ Install SFML-StateMachine by adding the StateMachine folder or the files therein
 This project requires SFML. SFML version 2.4.1 has been tested, but this project should work with any 2.x version.
 
 # Usage
+[Demo.cpp](Demo.cpp) demonstrates the basic usage. Build custom states by extending the virtual class ```sm::State```, ensuring to implement a constructor, and override the virtual methods ```State.Update(sf::Time deltaTime)``` and ```State.Draw(sf::RenderWindow* window)``` with state-specific logic and draw calls respectively.
 
+States can be added to an ```sm::StateMachine``` via ```StateMachine.AddState(std::shared_ptr<State> state)```. Alternatively, an initial state can be set using the overloaded StateMachine constructor ```StateMachine(std::shared_ptr<sf::RenderWindow> window, std::share_ptr<State> initialState)```.
 
 To run the state machine, use ```StateMachine.Execute()```. This will perform one 'execution' of the StateMachine. This may cause State changes and draw calls to be made. The result is a new frame output to the SFML window.
 
@@ -70,6 +72,8 @@ int main() {
 	return 0;
 }
 ```
+
+[Video: Demo in action](https://zippy.gfycat.com/MiserableIndelibleGaur.webm). This simple demo illustrates a minimal working state machine and state. The state changes from active to paused once the rectangle's x position is > 300.
 
 # Documentation
 For detailed documentation, please see the comments within the two header files:
