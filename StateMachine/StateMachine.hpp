@@ -11,10 +11,12 @@ namespace sm {
 	class StateMachine {
 	public:
 		///<summary>Constructs a new StateMachine</summary>
+		///<param name="window">A pointer to the SFML window associated with the StateMachine</param>
 		StateMachine(const std::shared_ptr<sf::RenderWindow>& window);
 
 		///<summary>Constructs a new StateMachine with the given initial state</summary>
-		///<param name="initialState">The initial state for the StateMachine</param>
+		///<param name="window">A pointer to the SFML window associated with the StateMachine</param>
+		///<param name="initialState">A pointer to the initial state for the StateMachine</param>
 		StateMachine(const std::shared_ptr<sf::RenderWindow>& window, std::shared_ptr<State> initialState);
 
 		///<summary>Executes the StateMachine. The result is a newly constructed frame 
@@ -22,7 +24,7 @@ namespace sm {
 		void Execute();
 
 		///<summary>Adds the given state to the state machine for processing on execution</summary>
-		///<param name="state">The state to add to the state machine</param>
+		///<param name="state">A pointer to the state to add to the state machine</param>
 		void AddState(std::shared_ptr<State> state);
 
 		///<summary>Sets the given state to the given status at the end of the next 
