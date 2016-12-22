@@ -33,7 +33,6 @@ namespace sm {
 
 		///<summary>Gets the status of the state</summary>
 		Status GetStatus() { return _status; }
-
 	protected:
 		///<summary>Points to the state to be executed next</summary>
 		std::shared_ptr<State> _nextState;

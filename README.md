@@ -13,9 +13,9 @@ This project requires SFML. SFML version 2.4.1 has been tested, but this project
 # Usage
 [Demo.cpp](Demo.cpp) demonstrates the basic usage. Build custom states by extending the virtual class ```sm::State```, ensuring to implement a constructor, and override the virtual methods ```State.Update(sf::Time deltaTime)``` and ```State.Draw(const std::shared_ptr<sf::RenderWindow>& window)``` with state-specific logic and draw calls respectively.
 
-States can be added to an ```sm::StateMachine``` via ```StateMachine.AddState(std::shared_ptr<State> state)```. Alternatively, an initial state can be set using the overloaded StateMachine constructor ```StateMachine(std::shared_ptr<sf::RenderWindow> window, std::share_ptr<State> initialState)```.
+States can be added to an ```sm::StateMachine``` via ```StateMachine.AddState(std::shared_ptr<State> state)```. Alternatively, an initial state can be set using the overloaded StateMachine constructor ```StateMachine(std::share_ptr<State> initialState)```.
 
-To run the state machine, use ```StateMachine.Execute()```. This will perform one 'execution' of the StateMachine. This may cause State changes and draw calls to be made. The result is a new frame output to the SFML window.
+To update the state machine, use ```StateMachine.UpdateStates()```. Visible states can then be drawn to the window via ```StateMachine.DrawStates(const std::shared_ptr<sf::RenderWindow>& window)```.
 
 States can be *active*, *paused* or *inactive*. To set a state's status, use ```State.QueueStateChange(std::shared_ptr<State> state, Status status)```.
 
@@ -28,6 +28,7 @@ States can be *active*, *paused* or *inactive*. To set a state's status, use ```
 
 class DemoState : public sm::State {
 public:
+	// Constructor initialises the state
 	DemoState() {
 		_rectangle.setSize(sf::Vector2f(200, 150));
 		_rectangle.setFillColor(sf::Color::Red);
@@ -35,18 +36,20 @@ public:
 	}
 
 private:
+	// Update function contains state-specific logic
 	void Update(sf::Time deltaTime) {
 		// The rectangle moves with time
-		_rectangle.move(0.2f * deltaTime.asMilliseconds(), 
+		_rectangle.move(0.2f * deltaTime.asMilliseconds(),
 			0.2f * deltaTime.asMilliseconds());
 
-		// Pause the state when the rectangle nears the bottom 
+		// Pause the state when the rectangle nears the bottom
 		// of the screen
 		if (_rectangle.getGlobalBounds().left > 300) {
 			SetStatus(sm::Status::PAUSED);
 		}
 	}
 
+	// Draw function contains SFML draw calls
 	void Draw(const std::shared_ptr<sf::RenderWindow>& window) {
 		window->draw(_rectangle);
 	}
@@ -55,19 +58,40 @@ private:
 };
 
 int main() {
+	// Create window
 	std::shared_ptr<sf::RenderWindow> window = std::make_shared<sf::RenderWindow>();
 	window->create(sf::VideoMode(640, 480), "Window");
 
-	sm::StateMachine stateMachine(window);
-	stateMachine.AddState(std::make_shared<DemoState>());
+	// Create state machine using demo state
+	sm::StateMachine stateMachine(std::make_shared<DemoState>());
 
-	while (!stateMachine.GetUserQuit()) {
-		stateMachine.Execute();
+	// Game loop
+	bool quit = false;
+	while (!quit) {
+		// Process input
+		sf::Event event;
+		while (window->pollEvent(event)) {
+			switch (event.type) {
+			case sf::Event::Closed:
+				quit = true;
+				break;
+			}
+		}
+
+		// Update states
+		stateMachine.UpdateStates();
+
+		// Draw states
+		window->clear();
+		stateMachine.DrawStates(window);
+		window->display();
+
+		// Wait
 		sf::sleep(sf::milliseconds(5));
 	}
-	
-	window->close();
 
+	// Cleanup
+	window->close();
 	printf("Press ENTER to exit");
 	std::getchar();
 	return 0;

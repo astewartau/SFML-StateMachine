@@ -1,27 +1,22 @@
 #pragma once
 #include <queue>
 #include <memory>
-#include <SFML\Graphics.hpp>
+#include <SFML\System\Clock.hpp>
 #include "State.hpp"
 
-namespace sf { class Clock; class RenderWindow; }
+// Forward declaration
+namespace sf { class RenderWindow; }
 
 namespace sm {
 	///<summary>Represents a StateMachine which manages and executes game states</summary>
 	class StateMachine {
 	public:
 		///<summary>Constructs a new StateMachine</summary>
-		///<param name="window">A pointer to the SFML window associated with the StateMachine</param>
-		StateMachine(const std::shared_ptr<sf::RenderWindow>& window);
+		StateMachine() {};
 
 		///<summary>Constructs a new StateMachine with the given initial state</summary>
-		///<param name="window">A pointer to the SFML window associated with the StateMachine</param>
 		///<param name="initialState">A pointer to the initial state for the StateMachine</param>
-		StateMachine(const std::shared_ptr<sf::RenderWindow>& window, std::shared_ptr<State> initialState);
-
-		///<summary>Executes the StateMachine. The result is a newly constructed frame 
-		///rendered to the SFML window based on input processing and state logic.</summary>
-		void Execute();
+		StateMachine(std::shared_ptr<State> initialState);
 
 		///<summary>Adds the given state to the state machine for processing on execution</summary>
 		///<param name="state">A pointer to the state to add to the state machine</param>
@@ -33,25 +28,14 @@ namespace sm {
 		///<param name="status">The new status of the state</param>
 		void QueueStateChange(std::shared_ptr<State> state, Status status);
 
-		///<summary>Gets the SFML window associated with the StateMachine</summary>
-		///<returns>A pointer to the SFML Window</returns>
-		std::shared_ptr<sf::RenderWindow> GetWindow();
-
-		///<summary>Returns true if the user has quit</summary>
-		///</returns>True if the the user has quit</returns>
-		bool GetUserQuit();
-
-	private:
-
-		///<summary>Handle any input received since the last execution</summary>
-		void ProcessInput();
-
-		///<summary>Updates active states according to state logic</summary>
+		///<summary>Updates active states according to state logic. Additionally, 
+		///makes status changes to live states and adds and removes states as necessary.</summary>
 		void UpdateStates();
 
 		///<summary>Updates active and paused states</summary>
-		void DrawStates();
-
+		///<param name="window">A pointer to the window to draw active and paused states to</param>
+		void DrawStates(const std::shared_ptr<sf::RenderWindow>& window);
+	private:
 		///<summary>Processes queued state changes from the action queue</summary>
 		void ProcessStateChanges();
 
@@ -63,11 +47,5 @@ namespace sm {
 
 		///<summary>An SFML clock that provides the deltaTime between executions</summary>
 		sf::Clock _clock;
-
-		///<summary>Points to the SFML RenderWindow associated with the StateMachine</summary>
-		std::shared_ptr<sf::RenderWindow> _window;
-
-		///<summary>True if the user has quit</summary>
-		bool _userQuit;
 	};
 }
