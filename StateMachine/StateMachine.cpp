@@ -1,11 +1,11 @@
 #include "StateMachine.hpp"
 
 namespace sm {
-	StateMachine::StateMachine(std::shared_ptr<sf::RenderWindow> window) :
+	StateMachine::StateMachine(const std::shared_ptr<sf::RenderWindow>& window) :
 		_window(window),
 		_userQuit(false) {}
 
-	StateMachine::StateMachine(std::shared_ptr<sf::RenderWindow> window, std::shared_ptr<State> initialState) :
+	StateMachine::StateMachine(const std::shared_ptr<sf::RenderWindow>& window, std::shared_ptr<State> initialState) :
 		_window(window),
 		_userQuit(false) {
 		AddState(initialState);
@@ -30,7 +30,7 @@ namespace sm {
 		return _window;
 	}
 
-	bool StateMachine::UserQuit() {
+	bool StateMachine::GetUserQuit() {
 		return _userQuit;
 	}
 
@@ -64,10 +64,10 @@ namespace sm {
 		for (std::shared_ptr<State> state : _states) {
 			switch (state->GetStatus()) {
 			case Status::ACTIVATED:
-				state->Draw(_window.get());
+				state->Draw(_window);
 				break;
 			case Status::PAUSED:
-				state->Draw(_window.get());
+				state->Draw(_window);
 				break;
 			case Status::DEACTIVATED:
 				break;
@@ -88,7 +88,7 @@ namespace sm {
 			// If the state is not stored, store it
 			// otherwise, update the status of the state
 			if (it == _states.end()) {
-				AddState(*it);
+				AddState(action.first);
 			} else {
 				(*it)->SetStatus(action.second);
 			}

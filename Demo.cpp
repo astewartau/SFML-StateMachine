@@ -1,4 +1,5 @@
 #pragma once
+#include <SFML/Graphics.hpp>
 #include "StateMachine/State.hpp"
 #include "StateMachine/StateMachine.hpp"
 
@@ -23,7 +24,7 @@ private:
 		}
 	}
 
-	void Draw(sf::RenderWindow* window) {
+	void Draw(const std::shared_ptr<sf::RenderWindow>& window) {
 		window->draw(_rectangle);
 	}
 
@@ -37,7 +38,7 @@ int main() {
 	sm::StateMachine stateMachine(window);
 	stateMachine.AddState(std::make_shared<DemoState>());
 
-	while (!stateMachine.UserQuit()) {
+	while (!stateMachine.GetUserQuit()) {
 		stateMachine.Execute();
 		sf::sleep(sf::milliseconds(5));
 	}

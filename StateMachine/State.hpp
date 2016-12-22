@@ -1,11 +1,10 @@
 #pragma once
-#include <SFML\Graphics.hpp>
-#include "StateMachine.hpp"
+#include <memory>
+
+// Forward declarations for SFML classes
+namespace sf { class Time; class RenderWindow; }
 
 namespace sm {
-	// Forward declaration
-	class StateMachine;
-
 	///<summary>Enumeration of State statuses</summary>
 	enum Status {
 		ACTIVATED,   // An active state that is updated and drawn to the window
@@ -24,7 +23,7 @@ namespace sm {
 		virtual void Update(sf::Time deltaTime) = 0;
 
 		///<summary>State-specific rendering</summary>
-		virtual void Draw(sf::RenderWindow* window) = 0;
+		virtual void Draw(const std::shared_ptr<sf::RenderWindow>& window) = 0;
 
 		///<summary>Sets the status of the state</summary>
 		void SetStatus(Status status) { _status = status; }

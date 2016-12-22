@@ -1,22 +1,21 @@
 #pragma once
 #include <queue>
 #include <memory>
+#include <SFML\Graphics.hpp>
 #include "State.hpp"
 
-namespace sm {
-	// Forward declarations
-	class State;
-	enum Status;
+namespace sf { class Clock; class RenderWindow; }
 
+namespace sm {
 	///<summary>Represents a StateMachine which manages and executes game states</summary>
 	class StateMachine {
 	public:
 		///<summary>Constructs a new StateMachine</summary>
-		StateMachine(std::shared_ptr<sf::RenderWindow> window);
+		StateMachine(const std::shared_ptr<sf::RenderWindow>& window);
 
 		///<summary>Constructs a new StateMachine with the given initial state</summary>
 		///<param name="initialState">The initial state for the StateMachine</param>
-		StateMachine(std::shared_ptr<sf::RenderWindow> window, std::shared_ptr<State> initialState);
+		StateMachine(const std::shared_ptr<sf::RenderWindow>& window, std::shared_ptr<State> initialState);
 
 		///<summary>Executes the StateMachine. The result is a newly constructed frame 
 		///rendered to the SFML window based on input processing and state logic.</summary>
@@ -38,7 +37,7 @@ namespace sm {
 
 		///<summary>Returns true if the user has quit</summary>
 		///</returns>True if the the user has quit</returns>
-		bool UserQuit();
+		bool GetUserQuit();
 
 	private:
 
