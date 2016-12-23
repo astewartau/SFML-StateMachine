@@ -9,12 +9,18 @@ namespace sm {
 	void StateMachine::AddState(std::shared_ptr<State> state) {
 		if (std::find(_states.begin(), _states.end(), state) == _states.end()) {
 			_states.push_back(state);
+		} else {
+			throw StateMachineException("Attempted to add a new state to the state machine, "
+				"but the state already exists!");
 		}
 	}
 
 	void StateMachine::QueueRemoveState(const State* state) {
 		if (_removeQueue.find(state) == _removeQueue.end()) {
 			_removeQueue.insert(state);
+		} else {
+			throw StateMachineException("Attempted to queue up a state to remove from the "
+				"state machine, but it's already queued!");
 		}
 	}
 
