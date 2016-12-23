@@ -7,12 +7,16 @@ namespace sm {
 	}
 
 	void StateMachine::AddState(std::shared_ptr<State> state) {
-		if (std::find(_states.begin(), _states.end(), state) == _states.end()) {
-			_states.push_back(state);
-		} else {
-			throw StateMachineException("Attempted to add a new state to the state machine, "
-				"but the state already exists!");
+		// Exception if the state is already managed
+		for (auto it = _states.begin(); it != _states.end(); it++) {
+			if (it->get() == state.get()) {
+				throw StateMachineException("Attempted to add a new state to the state machine, "
+					"but the state already exists!");
+				return;
+			}
 		}
+
+		_states.push_back(state);
 	}
 
 	void StateMachine::QueueRemoveState(const State* state) {
@@ -25,12 +29,17 @@ namespace sm {
 	}
 
 	void StateMachine::UpdateStates() {
+		// Get time since last update
+		sf::Time elapsedTime = _clock.restart();
+
+		// Update states according to state logic
 		for (std::shared_ptr<State> state : _states) {
 			if (!state->GetPaused()) {
-				state->Update(_clock.restart());
+				state->Update(elapsedTime);
 			}
 		}
 
+		// Process any state removals that have been queued
 		for (const State* state : _removeQueue) {
 			for (auto it = _states.begin(); it != _states.end(); it++) {
 				if (it->get() == state) {
