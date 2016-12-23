@@ -3,6 +3,7 @@
 #include "StateMachine/State.hpp"
 #include "StateMachine/StateMachine.hpp"
 
+// Concrete extension of the virtual state class
 class DemoState : public sm::State {
 public:
 	// Constructor initialises the state
@@ -21,7 +22,7 @@ private:
 		// Pause the state when the rectangle nears the bottom 
 		// of the screen
 		if (_rectangle.getGlobalBounds().left > 300) {
-			SetStatus(sm::Status::PAUSED);
+			SetPaused(true);
 		}
 	}
 
@@ -36,7 +37,7 @@ private:
 int main() {
 	// Create window
 	std::shared_ptr<sf::RenderWindow> window = std::make_shared<sf::RenderWindow>();
-	window->create(sf::VideoMode(640, 480), "Window");
+	window->create(sf::VideoMode(640, 480), "StateMachine demo");
 
 	// Create state machine using demo state
 	sm::StateMachine stateMachine(std::make_shared<DemoState>());

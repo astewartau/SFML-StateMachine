@@ -12,12 +12,6 @@ namespace sm {
 		}
 	}
 
-	void StateMachine::QueueStatusChange(const State* state, Status status) {
-		if (_actionQueue.find(state) == _actionQueue.end()) {
-			_actionQueue.insert(std::make_pair(state, status));
-		}
-	}
-
 	void StateMachine::QueueRemoveState(const State* state) {
 		if (_removeQueue.find(state) == _removeQueue.end()) {
 			_removeQueue.insert(state);
@@ -25,57 +19,13 @@ namespace sm {
 	}
 
 	void StateMachine::UpdateStates() {
-		int numStates = _states.size();
-		for (int i = 0; i < numStates; i++) {
-			switch (_states[i]->GetStatus()) {
-			case Status::ACTIVATED:
-				_states[i]->Update(_clock.restart());
-				break;
-			case Status::PAUSED:
-				break;
-			case Status::DEACTIVATED:
-				break;
-			}
-		}
-
-		ProcessStateChanges();
-	}
-
-	void StateMachine::DrawStates(const std::shared_ptr<sf::RenderWindow>& window) {
 		for (std::shared_ptr<State> state : _states) {
-			switch (state->GetStatus()) {
-			case Status::ACTIVATED:
-				state->Draw(window);
-				break;
-			case Status::PAUSED:
-				state->Draw(window);
-				break;
-			case Status::DEACTIVATED:
-				break;
+			if (!state->GetPaused()) {
+				state->Update(_clock.restart());
 			}
 		}
-	}
 
-	void StateMachine::ClearAll() {
-		_states.clear();
-		_actionQueue.clear();
-		_removeQueue.clear();
-	}
-
-	void StateMachine::ProcessStateChanges() {
-		for (std::pair<const State*, Status> action : _actionQueue) {
-			for (auto it = _states.begin(); it != _states.end(); it++) {
-				if (it->get() == action.first) {
-					(*it)->SetStatus(action.second);
-				}
-			}
-		}
-		_actionQueue.clear();
-
-		while (!_removeQueue.empty()) {
-			const State* state = *_removeQueue.begin();
-			_removeQueue.erase(_removeQueue.begin());
-
+		for (const State* state : _removeQueue) {
 			for (auto it = _states.begin(); it != _states.end(); it++) {
 				if (it->get() == state) {
 					_states.erase(it);
@@ -83,5 +33,19 @@ namespace sm {
 				}
 			}
 		}
+		_removeQueue.clear();
+	}
+
+	void StateMachine::DrawStates(const std::shared_ptr<sf::RenderWindow>& window) {
+		for (std::shared_ptr<State> state : _states) {
+			if (state->GetVisible()) {
+				state->Draw(window);
+			}
+		}
+	}
+
+	void StateMachine::ClearAll() {
+		_states.clear();
+		_removeQueue.clear();
 	}
 }

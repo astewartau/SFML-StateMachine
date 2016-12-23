@@ -5,20 +5,30 @@
 namespace sf { class Time; class RenderWindow; }
 
 namespace sm {
-	///<summary>Enumeration of State statuses</summary>
-	enum Status {
-		ACTIVATED,   ///<summary>An active state that is updated and drawn to the window</summary>
-		DEACTIVATED, ///<summary>An inactive state that is neither updated nor drawn</summary>
-		PAUSED		 ///<summary>A semi-active state that is drawn to the window but not updated</summary>
-	};
-
 	///<summary>Represents an executable game state</summary>
 	class State {
-	public:
-		///<summary>Constructs a new state</summary>
-		///<param name="status">The intial status of the new state</param>
-		State(Status status = Status::ACTIVATED) : _status(status) {}
+		friend class StateMachine;
 
+	public:
+		///<summary>Constructs a new visible, unpaused state</summary>
+		State() : _paused(false), _visible(true) {}
+
+		///<summary>Pause or unpause the state</summary>
+		///<param name="paused">Whether to pause or unpause the state</param>
+		void SetPaused(bool paused) { _paused = paused; }
+
+		///<summary>Show or hide the state's output to the RenderWindow</summary>
+		///<param name="visible">Whether to show or hide the state</param>
+		void SetVisible(bool visible) { _visible = visible; }
+
+		///<summary>Gets whether the state is currently paused</summary>
+		///<returns>True if the state is currently paused</returns>
+		bool GetPaused() { return _paused; }
+
+		///<summary>Gets whether the state is currently visible on render</summary>
+		///<returns>True if the state is visible on render</returns>
+		bool GetVisible() { return _visible; }
+	private:
 		///<summary>Handles state-specific logic</summary>
 		///<param name="deltaTime">Time since the previous execution</param>
 		virtual void Update(sf::Time deltaTime) = 0;
@@ -27,15 +37,10 @@ namespace sm {
 		///<param name="window">A pointer to the window to render the state to</param>
 		virtual void Draw(const std::shared_ptr<sf::RenderWindow>& window) = 0;
 
-		///<summary>Sets the status of the state</summary>
-		///<param name="status">The status to set the state to</param>
-		void SetStatus(Status status) { _status = status; }
+		///<summary>A boolean to represent whether or not the state is paused</summary>
+		bool _paused;
 
-		///<summary>Gets the status of the state</summary>
-		///<returns>The current status of the state</returns>
-		Status GetStatus() { return _status; }
-	private:
-		///<summary>The current status of the state</summary>
-		Status _status;
+		///<summary>A boolean to represent whether or not the state will be drawn to the renderer</summary>
+		bool _visible;
 	};
 }
