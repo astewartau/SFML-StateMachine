@@ -15,9 +15,9 @@ This project requires SFML. SFML version 2.4.1 has been tested, but this project
 
 States can be added to an ```sm::StateMachine``` via ```StateMachine.AddState(std::shared_ptr<State> state)```. Alternatively, an initial state can be set using the overloaded StateMachine constructor ```StateMachine(std::share_ptr<State> initialState)```.
 
-To update the state machine, use ```StateMachine.UpdateStates()```. Visible states can then be drawn to the window via ```StateMachine.DrawStates(const std::shared_ptr<sf::RenderWindow>& window)```.
+To update the state machine, use ```StateMachine.UpdateStates()```. Visible states can then be drawn to the renderer via ```StateMachine.DrawStates(const std::shared_ptr<sf::RenderWindow>& window)```.
 
-States can be *active*, *paused* or *inactive*. To set a state's status, use ```State.QueueStateChange(std::shared_ptr<State> state, Status status)```.
+States can be *active*, *paused* or *inactive*. To set a state's status, use ```StateMachine.QueueStateChange(std::shared_ptr<State> state, Status status)``` or ```State.SetStatus(Status status)```.
 
 ## Demo file
 ```cpp
@@ -34,15 +34,14 @@ public:
 		_rectangle.setFillColor(sf::Color::Red);
 		_rectangle.setPosition(20, 20);
 	}
-
 private:
 	// Update function contains state-specific logic
 	void Update(sf::Time deltaTime) {
 		// The rectangle moves with time
-		_rectangle.move(0.2f * deltaTime.asMilliseconds(),
+		_rectangle.move(0.2f * deltaTime.asMilliseconds(), 
 			0.2f * deltaTime.asMilliseconds());
 
-		// Pause the state when the rectangle nears the bottom
+		// Pause the state when the rectangle nears the bottom 
 		// of the screen
 		if (_rectangle.getGlobalBounds().left > 300) {
 			SetStatus(sm::Status::PAUSED);
@@ -88,12 +87,12 @@ int main() {
 
 		// Wait
 		sf::sleep(sf::milliseconds(5));
-	}
 
+	}
+	
 	// Cleanup
+	stateMachine.ClearAll();
 	window->close();
-	printf("Press ENTER to exit");
-	std::getchar();
 	return 0;
 }
 ```

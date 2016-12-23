@@ -1,6 +1,8 @@
 #pragma once
-#include <queue>
 #include <memory>
+#include <vector>
+#include <set>
+#include <map>
 #include <SFML\System\Clock.hpp>
 #include "State.hpp"
 
@@ -26,7 +28,11 @@ namespace sm {
 		///execution cycle.</summary>
 		///<param name="state">A pointer to the state to set the status of</param>
 		///<param name="status">The new status of the state</param>
-		void QueueStateChange(std::shared_ptr<State> state, Status status);
+		void QueueStatusChange(const State* state, Status status);
+
+		///<summary>Removes the given state from the state machine</summary>
+		///<param name="state">A pointer to the state to remove from the state machine</param>
+		void QueueRemoveState(const State* state);
 
 		///<summary>Updates active states according to state logic. Additionally, 
 		///makes status changes to live states and adds and removes states as necessary.</summary>
@@ -35,6 +41,9 @@ namespace sm {
 		///<summary>Updates active and paused states</summary>
 		///<param name="window">A pointer to the window to draw active and paused states to</param>
 		void DrawStates(const std::shared_ptr<sf::RenderWindow>& window);
+
+		///<summary>Clears all states and queued actions, effectively resetting the state machine</summary>
+		void ClearAll();
 	private:
 		///<summary>Processes queued state changes from the action queue</summary>
 		void ProcessStateChanges();
@@ -42,8 +51,11 @@ namespace sm {
 		///<summary>A vector of states and their associated status</summary>
 		std::vector<std::shared_ptr<State>> _states;
 
-		///<summary>A queue of actions to occur at the end of an execution</summary>
-		std::queue<std::pair<std::shared_ptr<State>, Status>> _actionQueue;
+		///<summary>A map of actions to occur at the end of an update</summary>
+		std::map<const State*, Status> _actionQueue;
+
+		///<summary>A set of states to remove at the end of an update</summary>
+		std::set<const State*> _removeQueue;
 
 		///<summary>An SFML clock that provides the deltaTime between executions</summary>
 		sf::Clock _clock;

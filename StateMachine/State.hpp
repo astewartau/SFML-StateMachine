@@ -17,7 +17,7 @@ namespace sm {
 	public:
 		///<summary>Constructs a new state</summary>
 		///<param name="status">The intial status of the new state</param>
-		State::State(Status status = Status::ACTIVATED) : _nextState(this), _status(status) {}
+		State(Status status = Status::ACTIVATED) : _status(status) {}
 
 		///<summary>Handles state-specific logic</summary>
 		///<param name="deltaTime">Time since the previous execution</param>
@@ -32,11 +32,9 @@ namespace sm {
 		void SetStatus(Status status) { _status = status; }
 
 		///<summary>Gets the status of the state</summary>
+		///<returns>The current status of the state</returns>
 		Status GetStatus() { return _status; }
-	protected:
-		///<summary>Points to the state to be executed next</summary>
-		std::shared_ptr<State> _nextState;
-
+	private:
 		///<summary>The current status of the state</summary>
 		Status _status;
 	};

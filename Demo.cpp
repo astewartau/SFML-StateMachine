@@ -11,7 +11,6 @@ public:
 		_rectangle.setFillColor(sf::Color::Red);
 		_rectangle.setPosition(20, 20);
 	}
-
 private:
 	// Update function contains state-specific logic
 	void Update(sf::Time deltaTime) {
@@ -65,11 +64,11 @@ int main() {
 
 		// Wait
 		sf::sleep(sf::milliseconds(5));
+
 	}
 	
 	// Cleanup
+	stateMachine.ClearAll();
 	window->close();
-	printf("Press ENTER to exit");
-	std::getchar();
 	return 0;
 }

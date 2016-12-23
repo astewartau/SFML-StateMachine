@@ -1,4 +1,5 @@
 #include "StateMachine.hpp"
+#include <algorithm>
 
 namespace sm {
 	StateMachine::StateMachine(std::shared_ptr<State> initialState) {
@@ -6,18 +7,29 @@ namespace sm {
 	}
 
 	void StateMachine::AddState(std::shared_ptr<State> state) {
-		_states.push_back(state);
+		if (std::find(_states.begin(), _states.end(), state) == _states.end()) {
+			_states.push_back(state);
+		}
 	}
 
-	void StateMachine::QueueStateChange(std::shared_ptr<State> state, Status status) {
-		_actionQueue.push(std::make_pair(state, status));
+	void StateMachine::QueueStatusChange(const State* state, Status status) {
+		if (_actionQueue.find(state) == _actionQueue.end()) {
+			_actionQueue.insert(std::make_pair(state, status));
+		}
+	}
+
+	void StateMachine::QueueRemoveState(const State* state) {
+		if (_removeQueue.find(state) == _removeQueue.end()) {
+			_removeQueue.insert(state);
+		}
 	}
 
 	void StateMachine::UpdateStates() {
-		for (std::shared_ptr<State> state : _states) {
-			switch (state->GetStatus()) {
+		int numStates = _states.size();
+		for (int i = 0; i < numStates; i++) {
+			switch (_states[i]->GetStatus()) {
 			case Status::ACTIVATED:
-				state->Update(_clock.restart());
+				_states[i]->Update(_clock.restart());
 				break;
 			case Status::PAUSED:
 				break;
@@ -44,21 +56,31 @@ namespace sm {
 		}
 	}
 
+	void StateMachine::ClearAll() {
+		_states.clear();
+		_actionQueue.clear();
+		_removeQueue.clear();
+	}
+
 	void StateMachine::ProcessStateChanges() {
-		while (!_actionQueue.empty()) {
-			// Get the next action
-			std::pair<std::shared_ptr<State>, Status> action = _actionQueue.front();
-			_actionQueue.pop();
+		for (std::pair<const State*, Status> action : _actionQueue) {
+			for (auto it = _states.begin(); it != _states.end(); it++) {
+				if (it->get() == action.first) {
+					(*it)->SetStatus(action.second);
+				}
+			}
+		}
+		_actionQueue.clear();
 
-			// Check whether the state associated with the action is stored
-			auto it = std::find(_states.begin(), _states.end(), action.first);
+		while (!_removeQueue.empty()) {
+			const State* state = *_removeQueue.begin();
+			_removeQueue.erase(_removeQueue.begin());
 
-			// If the state is not stored, store it
-			// otherwise, update the status of the state
-			if (it == _states.end()) {
-				AddState(action.first);
-			} else {
-				(*it)->SetStatus(action.second);
+			for (auto it = _states.begin(); it != _states.end(); it++) {
+				if (it->get() == state) {
+					_states.erase(it);
+					break;
+				}
 			}
 		}
 	}
