@@ -97,7 +97,6 @@ int main() {
 	window->create(sf::VideoMode(640, 480), "StateMachine demo");
 
 	// Create state machine using demo state
-	//std::shared_ptr<DemoState> initialState = std::make_shared<DemoState>();
 	sm::StateMachine stateMachine(std::make_shared<DemoState>());
 
 	// Game loop

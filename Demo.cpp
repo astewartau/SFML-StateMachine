@@ -65,7 +65,6 @@ int main() {
 
 		// Wait
 		sf::sleep(sf::milliseconds(5));
-
 	}
 	
 	// Cleanup
