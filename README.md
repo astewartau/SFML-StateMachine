@@ -44,11 +44,11 @@ Add and remove states from a state machine via:
 
 A state machine can be reset (all states and pending actions cleared) via:
 
-- ```sm::StateMachine::ClearAll()```.
+- ```sm::StateMachine::ClearAll()```
 
 States can be updated and drawn to the screen according to game logic via:
 
-- ```sm::StateMachine::UpdateStates()```
+- ```sm::StateMachine::UpdateStates(sf::Time deltaTime)```
 - ```sm::StateMachine::DrawStates(const std::shared_ptr<sf::RenderWindow>& window)```
 
 ## Demo
