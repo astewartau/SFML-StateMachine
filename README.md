@@ -99,6 +99,9 @@ int main() {
 	// Create state machine using demo state
 	sm::StateMachine stateMachine(std::make_shared<DemoState>());
 
+	// Clock to measure time between updates
+	sf::Clock deltaClock;
+
 	// Game loop
 	bool quit = false;
 	while (!quit) {
@@ -113,7 +116,7 @@ int main() {
 		}
 
 		// Update states
-		stateMachine.UpdateStates();
+		stateMachine.UpdateStates(deltaClock.restart());
 
 		// Draw states
 		window->clear();
@@ -122,7 +125,6 @@ int main() {
 
 		// Wait
 		sf::sleep(sf::milliseconds(5));
-
 	}
 
 	// Cleanup

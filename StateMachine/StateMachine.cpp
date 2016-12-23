@@ -1,4 +1,5 @@
 #include "StateMachine.hpp"
+#include <SFML\System\Time.hpp>
 #include <algorithm>
 
 namespace sm {
@@ -28,14 +29,11 @@ namespace sm {
 		}
 	}
 
-	void StateMachine::UpdateStates() {
-		// Get time since last update
-		sf::Time elapsedTime = _clock.restart();
-
+	void StateMachine::UpdateStates(sf::Time deltaTime) {
 		// Update states according to state logic
 		for (std::shared_ptr<State> state : _states) {
 			if (!state->GetPaused()) {
-				state->Update(elapsedTime);
+				state->Update(deltaTime);
 			}
 		}
 

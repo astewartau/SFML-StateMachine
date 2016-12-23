@@ -3,7 +3,6 @@
 #include <vector>
 #include <set>
 #include <exception>
-#include <SFML\System\Clock.hpp>
 #include "State.hpp"
 
 // Forward declaration
@@ -46,7 +45,7 @@ namespace sm {
 
 		///<summary>Updates active states according to state logic, and removes any states queued 
 		///for removal.</summary>
-		void UpdateStates();
+		void UpdateStates(sf::Time deltaTime);
 
 		///<summary>Updates active and paused states</summary>
 		///<param name="window">A pointer to the window to draw active and paused states to</param>
@@ -61,8 +60,5 @@ namespace sm {
 
 		///<summary>A set of states to remove at the end of an update</summary>
 		std::set<const State*> _removeQueue;
-
-		///<summary>An SFML clock that provides the deltaTime between executions</summary>
-		sf::Clock _clock;
 	};
 }
