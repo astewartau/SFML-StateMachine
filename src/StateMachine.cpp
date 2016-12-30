@@ -31,7 +31,7 @@ namespace sm {
 
 	void StateMachine::UpdateStates(sf::Time deltaTime) {
 		// Update states according to state logic
-		for (int i = 0; i < _states.size(); i++) {
+		for (unsigned int i = 0; i < _states.size(); i++) {
 			if (!_states[i]->GetPaused()) {
 				_states[i]->Update(deltaTime);
 			}
