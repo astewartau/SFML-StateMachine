@@ -3,9 +3,9 @@
 
 # Installation
 Install SFML-StateMachine by adding the StateMachine folder or the files therein to your project, including:
-- [State.hpp](StateMachine/State.hpp)
-- [StateMachine.hpp](StateMachine/StateMachine.hpp)
-- [StateMachine.cpp](StateMachine/StateMachine.cpp)
+- [State.hpp](include/StateMachine/State.hpp)
+- [StateMachine.hpp](include/StateMachine/StateMachine.hpp)
+- [StateMachine.cpp](src/StateMachine.cpp)
 
 ## Dependencies
 This project requires SFML. SFML version 2.4.1 has been tested, but this project should work with any 2.x version.
